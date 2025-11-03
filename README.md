@@ -7,4 +7,5 @@ Members:
     Paclita, Ruvic M.
     Pormatelo, Jovan E.
 
-All rights reserved ©
+Thank you
+All rights reserved © 2025
