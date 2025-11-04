@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,9 +84,9 @@
     .search-box i:hover {
       color: #b33939;
     }
-
   </style>
 </head>
+
 <body>
   <nav class="navbar py-2 shadow-sm">
     <div class="container d-flex align-items-center justify-content-between">
@@ -123,8 +124,9 @@
       </div>
     </div>
   </nav>
-  
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

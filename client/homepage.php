@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,16 +22,16 @@
         /* Banner */
         .hero {
             position: relative;
-            background: url('../media/temp0.png') center/cover no-repeat;
+            background: url('../media/temp.png') center/cover no-repeat;
             color: white;
             height: 100vh;
         }
 
         .hero-content {
             position: absolute;
-            bottom: 40px; /* distance from bottom */
-            left: 40px;   /* distance from left */
-            background: rgba(0, 0, 0, 0.4); /* semi-transparent black */
+            bottom: 40px;
+            left: 40px;
+            background: rgba(0, 0, 0, 0.4);
             color: white;
             padding: 20px 30px;
             border: none;
@@ -49,6 +50,12 @@
             padding: 10px 20px;
             text-transform: uppercase;
             border: none;
+            transition: color 0.4s
+        }
+
+        .hero-btn:hover {
+            background: white;
+            color: #b33939;
         }
 
         /* Section Titles */
@@ -123,13 +130,13 @@
 
         <div class="row g-4">
             <?php for ($i = 0; $i < 8; $i++): ?>
-            <div class="col-6 col-md-3">
-                <div class="product-card text-center">
-                    <img src="../media/temp.png" alt="Product Image">
-                    <p class="mt-2 fw-semibold">Sample Item <?= $i + 1 ?></p>
-                    <button class="bid-btn">BID</button>
+                <div class="col-6 col-md-3">
+                    <div class="product-card text-center">
+                        <img src="../media/temp.png" alt="Product Image">
+                        <p class="mt-2 fw-semibold">Sample Item <?= $i + 1 ?></p>
+                        <button class="bid-btn">BID</button>
+                    </div>
                 </div>
-            </div>
             <?php endfor; ?>
         </div>
     </section>
@@ -140,11 +147,11 @@
         <p class="text-muted" style="font-size: 24px;">Bid with Confidence, Win with Trust</p>
     </section>
     <section class="bg-dark">
-    <br>
-    <br>
-    <br>
+        <br>
+        <br>
+        <br>
     </section>
-    
+
     <!-- Ending Soon Section -->
     <section class="ending-soon text-center">
         <h2 class="section-title"><span class="highlight">Ending</span> Soon</h2>
@@ -153,24 +160,25 @@
         <div class="container mt-4">
             <div class="row g-4 justify-content-center">
                 <?php for ($i = 0; $i < 3; $i++): ?>
-                <div class="col-10 col-md-4">
-                    <div class="product-card text-center bg-white p-3 rounded shadow-sm">
-                        <img src="../media/temp.jpg" alt="Ending Soon">
-                        <p class="fw-semibold mt-2">Sample Item <?= $i + 1 ?></p>
-                        <p class="text-danger small">Time Left: 02:15:43</p>
-                        <button class="bid-btn">BID</button>
+                    <div class="col-10 col-md-4">
+                        <div class="product-card text-center bg-white p-3 rounded shadow-sm">
+                            <img src="../media/temp.jpg" alt="Ending Soon">
+                            <p class="fw-semibold mt-2">Sample Item <?= $i + 1 ?></p>
+                            <p class="text-danger small">Time Left: 00:00:00</p>
+                            <button class="bid-btn">BID</button>
+                        </div>
                     </div>
-                </div>
                 <?php endfor; ?>
             </div>
         </div>
     </section>
-    
-    <a href="#" class="nav-link text-center mt-2 d-block">Back to Top</a>   
+
+    <a href="#" class="nav-link text-center mt-2 d-block">Back to Top</a>
 
     <?php include '../footer.php'; ?>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
