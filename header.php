@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QUALITEES | Header</title>
-  <link rel="icon" href="../media/icon.png" type="icon.png">
+  <link rel="icon" href="./media/icon.png" type="icon.png">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
-    @import url('../stardom.css');
+    @import url('./media/stardom.css');
 
     .navbar {
       background-color: #fff;
@@ -91,8 +91,8 @@
   <nav class="navbar py-2 shadow-sm">
     <div class="container d-flex align-items-center justify-content-between">
       <!-- Logo -->
-      <a class="navbar-brand" href="../client/homepage.php">
-        <img src="../media/logo.png" alt="Logo" class="img-fluid">
+      <a class="navbar-brand" href="./homepage.php">
+        <img src="./media/logo.png" alt="Logo" class="img-fluid">
       </a>
 
       <!-- Categories -->
