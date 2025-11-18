@@ -81,16 +81,16 @@
     <h2 style="font-family: 'Stardom-Regular'; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
       Log in to your account
     </h2>
-    <form id="loginForm">
+    <form id="loginForm" method="POST" action="login.php">
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
       </div>
 
       <div class="mb-3 password-wrapper">
         <label for="password" class="form-label">Password</label>
         <div class="input-group">
-          <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
           <span class="input-group-text bg-transparent border-start-0">
             <i class="bi bi-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
           </span>
@@ -104,7 +104,6 @@
       <p>Don’t have an account? <a href="#">Sign up</a></p>
     </div>
   </main>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Password toggle
@@ -113,20 +112,6 @@
       const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
       passwordInput.attr('type', type);
       $(this).toggleClass('bi-eye-slash bi-eye');
-    });
-
-    // Form submit placeholder
-    $('#loginForm').on('submit', function(e) {
-      e.preventDefault();
-      const email = $('#email').val().trim();
-      const password = $('#password').val().trim();
-
-      if (!email || !password) {
-        alert('Please fill in all fields.');
-        return;
-      }
-
-      alert(`Logging in as: ${email}`);
     });
   </script>
 </body>
