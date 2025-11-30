@@ -75,13 +75,13 @@
 </head>
 
 <body>
-  <?php include './header2.php'; ?>
+  <?php include './headerLR.php'; ?>
 
   <main class="login-form">
     <h2 style="font-family: 'Stardom-Regular'; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
       Log in to your account
     </h2>
-    <form id="loginForm" method="POST" action="login.php">
+    <form id="loginForm" method="POST" action="login_process.php">
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
@@ -101,10 +101,11 @@
     </form>
 
     <div class="extra-links">
-      <p>Don’t have an account? <a href="#">Sign up</a></p>
+      <p>Don’t have an account? <a href="./register.php">Sign up</a></p>
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Password toggle
     $('#togglePassword').on('click', function() {

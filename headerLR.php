@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
-        @import url('../stardom.css');
+        @import url('./stardom.css');
 
         /* Header */
         header {
@@ -54,7 +54,7 @@
 <body>
     <header>
         <h1>QUALITEES</h1>
-        <a href="./homepage.php" class="close-btn"><i class="bi bi-x-lg"></i></a>
+        <a href="./landing.php" class="close-btn"><i class="bi bi-x-lg"></i></a>
     </header>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

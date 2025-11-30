@@ -1,3 +1,4 @@
+<?php include_once "conn.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -109,6 +110,13 @@
     </style>
 </head>
 
+<?php
+$imagePath = "./media/product1.png"; // dynamic path
+$itemName = "Cool Gadget";
+$timeLeft = "01:30:45";
+$bidAmount = 500;
+?>
+
 <body>
     <?php include './header.php'; ?>
 
@@ -116,31 +124,12 @@
         <!-- Hero Banner -->
         <section class="hero d-flex align-items-center">
             <div class="hero-content">
-                <h1>VEHICLES</h1>
-                <p>Vroom vroom brip brip skrrrr</p>
+                <h1>placeholder</h1>
+                <p>im going bananas</p>
                 <button class="hero-btn">BID NOW</button>
             </div>
         </section>
-
-        <!-- Ongoing Section -->
-        <section class="container my-5">
-            <h2 class="section-title">ONGOING</h2>
-            <div class="text-end mb-3">
-                <button class="btn btn-outline-dark btn-sm">View All</button>
-            </div>
-
-            <div class="row g-4">
-                <?php for ($i = 0; $i < 8; $i++): ?>
-                    <div class="col-6 col-md-3">
-                        <div class="product-card text-center">
-                            <img src="./media/temp.png" alt="Product Image">
-                            <p class="mt-2 fw-semibold">Sample Item <?= $i + 1 ?></p>
-                            <button class="bid-btn">BID</button>
-                        </div>
-                    </div>
-                <?php endfor; ?>
-            </div>
-        </section>
+        <br>
     </div>
 
     <!-- Qualitees Banner -->
@@ -155,29 +144,30 @@
     </section>
 
     <div class="container">
-        <!-- Ending Soon Section -->
-        <section class="ending-soon text-center">
-            <h2 class="section-title"><span class="highlight">Ending</span> Soon</h2>
-            <p>Don’t <span class="highlight">miss</span> out this deal!</p>
+        <!-- Ongoing Section -->
+        <section class="container my-5">
+            <h2 class="section-title">ONGOING</h2>
+            <div class="text-end mb-3">
+                <button class="btn btn-outline-dark btn-sm">View All</button>
+            </div>
 
-            <div class="container mt-4">
-                <div class="row g-4 justify-content-center">
-                    <?php for ($i = 0; $i < 3; $i++): ?>
-                        <div class="col-10 col-md-4">
-                            <div class="product-card text-center bg-white p-3 rounded shadow-sm">
-                                <img src="./media/temp.jpg" alt="Ending Soon">
-                                <p class="fw-semibold mt-2">Sample Item <?= $i + 1 ?></p>
-                                <p class="text-danger small">Time Left: 00:00:00</p>
-                                <button class="bid-btn">BID</button>
-                            </div>
+            <div class="row g-4">
+                <?php for ($i = 0; $i < 8; $i++): ?>
+                    <div class="col-6 col-md-3">
+                        <div class="product-card text-center">
+                            <img src="./media/temp.png" alt="Product Image">
+                            <p class="mt-2 fw-semibold">Sample Item <?= $i + 1 ?></p>
+                            <p class="text-dark small">Time Left: 00:00:00</p>
+                            <button class="bid-btn">₱ 000</button>
                         </div>
-                    <?php endfor; ?>
-                </div>
+                    </div>
+                <?php endfor; ?>
             </div>
         </section>
-
-        <a href="#" class="nav-link text-center mt-2 d-block">Back to Top</a>
     </div>
+
+
+
     <?php include './footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

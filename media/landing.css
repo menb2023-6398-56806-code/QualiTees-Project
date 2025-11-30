@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+@import url('./stardom.css');
+
+body {
+    background: white;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+}
+
+/* left logo */
+.icon-box img {
+    width: 260px;
+    opacity: 1;
+}
+
+/* right content */
+.content h1 {
+    font-size: 60px;
+    font-weight: 600;
+    font-family: 'Stardom-Regular';
+}
+
+.content h2 {
+    margin-top: 50px;
+    margin-bottom: 15px;
+    font-size: 40px;
+    font-weight: 500;
+    font-family: 'Stardom-Regular';
+}
+
+.small-text {
+    margin: 12px 0;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    text-align: left;
+}
+
+/* buttons */
+.btn {
+    width: 220px;
+    padding: 12px 0;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: block;
+}
+
+.primary {
+    background: black;
+    color: white;
+    border: none;
+}
+
+/* hover para mag turn gray */
+.primary:hover {
+    background: #9b9b9b;
+}
+
+.outline {
+    background: transparent;
+    border: 1px solid black;
+    color: black;
+}
+
+/* Hover = turn gray + text stays black */
+.outline:hover {
+    background: #9b9b9b;
+    border: transparent;
+}

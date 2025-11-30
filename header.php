@@ -7,12 +7,93 @@
   <title>QUALITEES | Header</title>
   <link rel="icon" href="./media/icon.png" type="icon.png">
 
+  <!-- Bootstrap & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-  <style>
-    @import url('./media/stardom.css');
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+  <script>
+    $(document).ready(function() {
+      // Search ENTER Function
+      $(".search-box input").on("keypress", function(e) {
+        if (e.which === 13) {
+          let q = $(this).val().trim();
+          if (q !== "") {
+            window.location.href = "search.php?q=" + encodeURIComponent(q);
+          }
+        }
+      });
+
+      // Search ICON click function
+      $(".search-box i").on("click", function() {
+        let q = $(".search-box input").val().trim();
+        if (q !== "") {
+          window.location.href = "search.php?q=" + encodeURIComponent(q);
+        }
+      });
+
+      // Helper to show dropdown content
+      function showDropdown(contentHtml) {
+        $("#headerDropdown").html(contentHtml).fadeIn(150);
+      }
+
+      // Icon click handlers
+      $(".bi-bell-fill").on("click", function(e) {
+        e.stopPropagation();
+        showDropdown(`
+          <div class="dropdown-box">
+            <h5>Notification</h5>
+            <hr>
+            <div class="dropdown-content">
+              <strong>notifType</strong>
+              <p>notifContent</p>
+            </div>
+          </div>
+        `);
+      });
+
+      $(".bi-heart-fill").on("click", function(e) {
+        e.stopPropagation();
+        showDropdown(`
+          <div class="dropdown-box">
+            <h5>Hearted</h5>
+            <hr>
+            <div class="dropdown-content">
+              <p>itemName</p>
+              <span>isHighestBid</span>
+            </div>
+          </div>
+        `);
+      });
+
+      $(".bi-person-circle").on("click", function(e) {
+        e.stopPropagation();
+        showDropdown(`
+          <div class="dropdown-box">
+            <h5>Profile</h5>
+            <hr>
+            <div class="dropdown-content">
+              <a href="#">Profile</a><br>
+              <a href="#">Items Ordered</a><br>
+              <a href="#">Order History</a><br>
+              <a href="#" class="text-danger">Log Out</a>
+            </div>
+          </div>
+        `);
+      });
+
+      // Close when clicking outside
+      $(document).on("click", function(e) {
+        if (!$(e.target).closest("#headerDropdown").length) {
+          $("#headerDropdown").fadeOut(150);
+        }
+      });
+    });
+  </script>
+
+  <style>
     .navbar {
       background-color: #fff;
       border-bottom: 1px solid #ddd;
@@ -48,17 +129,42 @@
       background-color: #b33939;
     }
 
-    .icon-btn i {
-      font-size: 1.25rem;
-      color: black;
-      transition: color 0.2s ease;
+    /* Dropdown */
+    .header-dropdown {
+      position: absolute;
+      top: 0px;
+      right: 0;
+      max-width: 400px;
+      min-width: 200px;
+      background: #f8f8f8;
+      border-radius: 12px;
+      z-index: 999;
+      display: none;
     }
 
-    .icon-btn i:hover {
+    .dropdown-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .dropdown-box h5 {
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .dropdown-box a {
+      text-decoration: none;
+      color: black;
+      font-size: 0.95rem;
+    }
+
+    .dropdown-box a:hover {
       color: #b33939;
     }
 
-    /* --- SEARCH STATIC --- */
+    /* Search */
     .search-box {
       display: flex;
       align-items: center;
@@ -79,9 +185,27 @@
     .search-box i {
       color: black;
       font-size: 1.2rem;
+      cursor: pointer;
     }
 
     .search-box i:hover {
+      color: #b33939;
+    }
+
+    .nav-icons i {
+      color: black;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    /* Hover effect */
+    .nav-icons i:hover {
+      color: #b33939;
+    }
+
+    /* Active (clicked) effect */
+    .nav-icons i.active {
       color: #b33939;
     }
   </style>
@@ -97,7 +221,7 @@
 
       <!-- Categories -->
       <ul class="navbar-nav d-flex flex-row mb-0">
-        <li class="nav-item"><a class="nav-link active" href="#">HOME</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
         <li class="nav-item"><a class="nav-link" href="#">JEWELRY</a></li>
         <li class="nav-item"><a class="nav-link" href="#">FINE ARTS</a></li>
         <li class="nav-item"><a class="nav-link" href="#">CARS</a></li>
@@ -105,27 +229,38 @@
         <li class="nav-item"><a class="nav-link" href="#">OTHERS</a></li>
       </ul>
 
-      <!-- Icons -->
-      <div class="d-flex align-items-center gap-3">
-        <!-- Search -->
+      <!-- Right Side: Search + Icons -->
+      <div class="d-flex align-items-center gap-4 nav-icons">
         <div class="search-box">
+          <input type="text" placeholder="Search...">
           <i class="bi bi-search"></i>
-          <input type="text" placeholder="Search">
         </div>
-
-        <!-- Notifications (plain icon now) -->
-        <a href="#" class="icon-btn">
-          <i class="bi bi-bell-fill"></i>
-        </a>
-
-        <!-- Other icons -->
-        <a href="#" class="icon-btn"><i class="bi bi-heart-fill"></i></a>
-        <a href="#" class="icon-btn"><i class="bi bi-person-circle"></i></a>
+        <i class="bi bi-bell-fill"></i>
+        <i class="bi bi-heart-fill"></i>
+        <i class="bi bi-person-circle"></i>
       </div>
+
+
     </div>
   </nav>
 
+  <!-- Dropdown container -->
+  <div class="container position-relative">
+    <div id="headerDropdown" class="header-dropdown shadow"></div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+<script>
+  //JS
+  $(".nav-icons i").on("click", function(e) {
+    e.stopPropagation();
+    // remove active from all icons
+    $(".nav-icons i").removeClass("active");
+    // add active to the clicked one
+    $(this).addClass("active");
+  });
+</script>
 
 </html>
