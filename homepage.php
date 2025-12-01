@@ -1,4 +1,27 @@
-<?php include_once "conn.php"; ?>
+<?php
+include_once "conn.php";
+// HERO //
+// ---FETCH HERO DATA (Latest Item) ---
+$heroQuery = "SELECT * FROM items ORDER BY ItemID DESC LIMIT 1";
+$heroResult = mysqli_query($conn, $heroQuery);
+$heroItem = mysqli_fetch_assoc($heroResult);
+
+// Set default values in case database is empty
+$heroName = "Coming Soon";
+$heroPrice = "0";
+$heroImg = "./media/temp.png"; // fallback image
+
+if ($heroItem) {
+    $heroName = $heroItem['ItemName'];
+    $heroPrice = $heroItem['price'];
+    $heroImg = $heroItem['media'];
+}
+
+// ---(SALE) ---
+$gridQuery = "SELECT * FROM items ORDER BY ItemID DESC LIMIT 8";
+$gridResult = mysqli_query($conn, $gridQuery);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,9 +46,8 @@
         /* Banner */
         .hero {
             position: relative;
-            background: url('./media/temp.png') center/cover no-repeat;
             color: white;
-            height: 100vh;
+            height: 90vh;
         }
 
         .hero-content {
@@ -110,30 +132,23 @@
     </style>
 </head>
 
-<?php
-$imagePath = "./media/product1.png"; // dynamic path
-$itemName = "Cool Gadget";
-$timeLeft = "01:30:45";
-$bidAmount = 500;
-?>
-
 <body>
     <?php include './header.php'; ?>
 
     <div class="container">
         <!-- Hero Banner -->
-        <section class="hero d-flex align-items-center">
+        <section class="hero d-flex align-items-center" style="background: url('<?php echo $heroImg; ?>') center/cover no-repeat;">
             <div class="hero-content">
-                <h1>placeholder</h1>
-                <p>im going bananas</p>
-                <button class="hero-btn">BID NOW</button>
+                <h1><?php echo htmlspecialchars($heroName); ?></h1>
+                <p>Latest Arrival</p>
+                <button class="hero-btn">BUY NOW - ₱<?php echo number_format($heroPrice, 2); ?></button>
             </div>
         </section>
         <br>
     </div>
 
     <!-- Qualitees Banner -->
-    <section class="text-center  py-4" style="background: #E5E4E2">
+    <section class="text-center py-4" style="background: #E5E4E2">
         <h1 style="font-family: 'Stardom-Regular'; font-size: 64px;">QUALITEES</h1>
         <p class="text-muted" style="font-size: 24px;">Bid with Confidence, Win with Trust</p>
     </section>
@@ -144,29 +159,41 @@ $bidAmount = 500;
     </section>
 
     <div class="container">
-        <!-- Ongoing Section -->
+        <!-- Sale Section -->
         <section class="container my-5">
-            <h2 class="section-title">ONGOING</h2>
+            <h2 class="section-title">Sale</h2>
             <div class="text-end mb-3">
-                <button class="btn btn-outline-dark btn-sm">View All</button>
+                <a href="./itemsort.php"><button class="btn btn-outline-dark btn-sm">View All</button></a>
             </div>
 
             <div class="row g-4">
-                <?php for ($i = 0; $i < 8; $i++): ?>
-                    <div class="col-6 col-md-3">
-                        <div class="product-card text-center">
-                            <img src="./media/temp.png" alt="Product Image">
-                            <p class="mt-2 fw-semibold">Sample Item <?= $i + 1 ?></p>
-                            <p class="text-dark small">Time Left: 00:00:00</p>
-                            <button class="bid-btn">₱ 000</button>
+                <?php
+                // Check if there are items
+                if (mysqli_num_rows($gridResult) > 0) {
+                    // Loop through the database results
+                    while ($row = mysqli_fetch_assoc($gridResult)) {
+                ?>
+                        <div class="col-6 col-md-3">
+                            <div class="product-card text-center">
+                                <!-- Display Item Image -->
+                                <img src="<?php echo htmlspecialchars($row['media']); ?>" alt="<?php echo htmlspecialchars($row['ItemName']); ?>">
+
+                                <!-- Display Item Name -->
+                                <p class="mt-2 fw-semibold"><?php echo htmlspecialchars($row['ItemName']); ?></p>
+
+                                <!-- Display Item Price -->
+                                <button class="bid-btn">₱ <?php echo number_format($row['price'], 2); ?></button>
+                            </div>
                         </div>
-                    </div>
-                <?php endfor; ?>
+                <?php
+                    } // End While Loop
+                } else {
+                    echo "<p class='text-center'>No items currently on sale.</p>";
+                }
+                ?>
             </div>
         </section>
     </div>
-
-
 
     <?php include './footer.php'; ?>
 

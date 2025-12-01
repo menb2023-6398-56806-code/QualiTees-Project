@@ -82,7 +82,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     <link rel="icon" href="./media/icon.png" type="icon.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <title>Display of Items to Sell</title>
+    <title>QUALITEES | Search/Items</title>
 
     <style>
         @import url('./media/stardom.css');

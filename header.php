@@ -21,7 +21,7 @@
         if (e.which === 13) {
           let q = $(this).val().trim();
           if (q !== "") {
-            window.location.href = "search.php?q=" + encodeURIComponent(q);
+            window.location.href = "itemsort.php?search=" + encodeURIComponent(q);
           }
         }
       });
@@ -30,7 +30,7 @@
       $(".search-box i").on("click", function() {
         let q = $(".search-box input").val().trim();
         if (q !== "") {
-          window.location.href = "search.php?q=" + encodeURIComponent(q);
+          window.location.href = "itemsort.php?search=" + encodeURIComponent(q);
         }
       });
 
@@ -40,29 +40,14 @@
       }
 
       // Icon click handlers
-      $(".bi-bell-fill").on("click", function(e) {
+      $(".bi-cart-fill").on("click", function(e) {
         e.stopPropagation();
         showDropdown(`
           <div class="dropdown-box">
-            <h5>Notification</h5>
-            <hr>
-            <div class="dropdown-content">
-              <strong>notifType</strong>
-              <p>notifContent</p>
-            </div>
-          </div>
-        `);
-      });
-
-      $(".bi-heart-fill").on("click", function(e) {
-        e.stopPropagation();
-        showDropdown(`
-          <div class="dropdown-box">
-            <h5>Hearted</h5>
+            <h5>Cart</h5>
             <hr>
             <div class="dropdown-content">
               <p>itemName</p>
-              <span>isHighestBid</span>
             </div>
           </div>
         `);
@@ -222,11 +207,11 @@
       <!-- Categories -->
       <ul class="navbar-nav d-flex flex-row mb-0">
         <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">JEWELRY</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">FINE ARTS</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">CARS</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">WATCHES</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">OTHERS</a></li>
+        <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=JEWELRY">JEWELRY</a></li>
+        <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=FINE+ARTS">FINE ARTS</a></li>
+        <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=CARS">CARS</a></li>
+        <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=WATCHES">WATCHES</a></li>
+        <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=OTHERS">OTHERS</a></li>
       </ul>
 
       <!-- Right Side: Search + Icons -->
@@ -235,8 +220,7 @@
           <input type="text" placeholder="Search...">
           <i class="bi bi-search"></i>
         </div>
-        <i class="bi bi-bell-fill"></i>
-        <i class="bi bi-heart-fill"></i>
+        <i class="bi bi-cart-fill"></i>
         <i class="bi bi-person-circle"></i>
       </div>
 
