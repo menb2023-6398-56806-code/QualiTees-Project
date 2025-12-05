@@ -15,6 +15,9 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
+    var user = "<?php echo htmlspecialchars($_SESSION['firstname'] ?? ''); ?>";
+
+
     $(document).ready(function() {
       // Search ENTER Function
       $(".search-box input").on("keypress", function(e) {
@@ -57,13 +60,13 @@
         e.stopPropagation();
         showDropdown(`
           <div class="dropdown-box">
-            <h5>Profile</h5>
+            <h5>Hello, ${user}</h5>
             <hr>
             <div class="dropdown-content">
               <a href="#">Profile</a><br>
               <a href="#">Items Ordered</a><br>
               <a href="#">Order History</a><br>
-              <a href="#" class="text-danger">Log Out</a>
+              <a href="logout.php" class="text-danger">Log Out</a>
             </div>
           </div>
         `);

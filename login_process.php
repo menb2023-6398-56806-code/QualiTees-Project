@@ -6,6 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
+
     $email = mysqli_real_escape_string($conn, $email);
 
     // Query only the user by email
@@ -27,7 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['isAdmin'] = $row['isAdmin'];
-
+            $_SESSION['firstname'] = $row['firstName'];
+            $_SESSION['lastname']  = $row['lastName'];
             if ($row['isAdmin'] == 1) {
                 header("Location: ./header.php");
             } else {

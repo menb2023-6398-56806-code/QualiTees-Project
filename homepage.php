@@ -1,5 +1,6 @@
 <?php
 include_once "conn.php";
+require 'init.php';
 // HERO //
 // ---FETCH HERO DATA (Latest Item) ---
 $heroQuery = "SELECT * FROM items ORDER BY ItemID DESC LIMIT 1";
@@ -182,7 +183,10 @@ $gridResult = mysqli_query($conn, $gridQuery);
                                 <p class="mt-2 fw-semibold"><?php echo htmlspecialchars($row['ItemName']); ?></p>
 
                                 <!-- Display Item Price -->
-                                <button class="bid-btn">₱ <?php echo number_format($row['price'], 2); ?></button>
+                                <a href="productpage.php?id=<?php echo $row['ItemID']; ?>">
+                                    <button class="bid-btn">₱ <?php echo number_format($row['price'], 2); ?></button>
+                                </a>
+
                             </div>
                         </div>
                 <?php

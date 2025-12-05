@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once "conn.php";
 
 // Check if form is submitted
@@ -14,8 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Basic validation
     if ($password !== $confirm_password) {
-        $_SESSION['error'] = "Passwords do not match.";
-        header("Location: register.php");
+        header("Location: register.php?error=Passwords+do+not+match");
         exit();
     }
 
@@ -23,24 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $isAdmin = 0;
     $isActive = 1;
+
     // Prepare and execute insert query
     $sql = "INSERT INTO users (firstName, lastName, email, password, address, isAdmin, isActive) 
             VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
+
     if ($stmt) {
         $stmt->bind_param("sssssii", $firstName, $lastName, $email, $hashedPassword, $address, $isAdmin, $isActive);
         if ($stmt->execute()) {
-            $_SESSION['success'] = "Registration successful! You can now log in.";
-            header("Location: login.php");
+            header("Location: login.php?success=Registration+successful!+You+can+now+log+in");
             exit();
         } else {
-            $_SESSION['error'] = "Database error: " . $stmt->error;
-            header("Location: register.php");
+            header("Location: register.php?error=Database+error:+" . urlencode($stmt->error));
             exit();
         }
     } else {
-        $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: register.php?error=Database+error:+" . urlencode($conn->error));
         exit();
     }
 } else {
