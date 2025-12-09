@@ -90,7 +90,7 @@
       <div class="mb-3 password-wrapper">
         <label for="password" class="form-label">Password</label>
         <div class="input-group">
-          <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required autocomplete="new-password">
           <span class="input-group-text bg-transparent border-start-0">
             <i class="bi bi-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
           </span>

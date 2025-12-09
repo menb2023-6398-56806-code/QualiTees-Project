@@ -1,44 +1,49 @@
 <?php
 require 'conn.php';
 
-
 $searchTerm = '';
 if (isset($_GET['search'])) {
     $searchTerm = trim(mysqli_real_escape_string($conn, $_GET['search']));
 }
 
 $sortMethod = $_GET['sort'] ?? '';
-$category   = $_GET['category'] ?? ''; // Category Capture
+$category   = $_GET['category'] ?? '';
 
-// 2. Build Base SQL
-$sql = "SELECT ItemName, description, media, price, startDate, endDate, isOver, category FROM items WHERE isOver = 0";
+// Base SQL
+$sql = "SELECT itemID, itemName, description, media, price, isOver, category 
+        FROM items WHERE isOver = 0";
 
-// 3. Apply Filters
+// Search filter
 if ($searchTerm !== '') {
-    $sql .= " AND (ItemName LIKE '%$searchTerm%' OR description LIKE '%$searchTerm%')";
+    $sql .= " AND (itemName LIKE '%$searchTerm%' OR description LIKE '%$searchTerm%')";
 }
 
+// Category filter
 if ($category !== '' && $category !== 'ALL') {
     $safeCat = mysqli_real_escape_string($conn, $category);
     $sql .= " AND category = '$safeCat'";
 }
 
-// 4. Apply Sorting
+// Sorting (UPDATED)
 switch ($sortMethod) {
     case 'price_low':
         $sql .= " ORDER BY price ASC";
         break;
+
     case 'price_high':
         $sql .= " ORDER BY price DESC";
         break;
-    case 'chronological':
-        $sql .= " ORDER BY startDate ASC";
+
+    case 'chronological': // renamed meaning: NEWEST
+        $sql .= " ORDER BY itemID DESC";
         break;
-    case 'time_almost_over':
-        $sql .= " ORDER BY endDate ASC";
+
+    case 'oldest': // formerly time_almost_over
+        $sql .= " ORDER BY itemID ASC";
         break;
+
     default:
-        $sql .= " ORDER BY startDate ASC";
+        $sql .= " ORDER BY itemID DESC"; // newest default
         break;
 }
 
@@ -48,23 +53,13 @@ $products = [];
 
 if ($result && mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
-        $now = time();
-        $endTime = strtotime($row['endDate']);
-        $seconds = $endTime - $now;
 
-        if ($seconds < 0) {
-            $timeLeft = "OVER";
-        } else {
-            $hours = floor($seconds / 3600);
-            $mins = floor(($seconds % 3600) / 60);
-            $secs = $seconds % 60;
-            $timeLeft = sprintf("%02d:%02d:%02d", $hours, $mins, $secs);
-        }
+
 
         $products[] = [
-            "title" => $row['ItemName'],
+            "id"    => $row['itemID'],
+            "title" => $row['itemName'],
             "description" => $row['description'],
-            "time"  => $timeLeft,
             "price" => $row['price'],
             "img"   => !empty($row['media']) ? $row['media'] : 'media/temp.jpg',
             "alt"   => $row['description']
@@ -324,7 +319,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <button type="button" onclick="setSort('chronological')" class="<?= $sortMethod == 'chronological' ? 'active' : '' ?>">Chronological</button>
                         <button type="button" onclick="setSort('price_low')" class="<?= $sortMethod == 'price_low' ? 'active' : '' ?>">Price low to high</button>
                         <button type="button" onclick="setSort('price_high')" class="<?= $sortMethod == 'price_high' ? 'active' : '' ?>">Price high to low</button>
-                        <button type="button" onclick="setSort('time_almost_over')" class="<?= $sortMethod == 'time_almost_over' ? 'active' : '' ?>">Time almost over</button>
+                        <button type="button" onclick="setSort('oldest')" class="<?= $sortMethod == 'oldest' ? 'active' : '' ?>">Oldest</button>
                     </div>
                 </div>
 
@@ -333,7 +328,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <!-- Category Radio Buttons -->
                 <div class="d-flex align-items-center gap-4 flex-wrap">
                     <!-- Note: 'onchange="this.form.submit()"' for immediate filtering when clicked. 
-                         Remove if dont want-->
+                            Remove if dont want-->
 
                     <label class="category text-center">
                         <input type="radio" name="category" value="ALL" <?= ($category == '' || $category == 'ALL') ? 'checked' : '' ?> onchange="this.form.submit()">
@@ -392,21 +387,24 @@ if ($result && mysqli_num_rows($result) > 0) {
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
                     <div class="col">
-                        <div class="card auction-card">
-                            <img src="<?= htmlspecialchars($product['img']); ?>" class="card-img-top" alt="<?= htmlspecialchars($product['alt']); ?>" />
-                            <div class="card-body text-center">
-                                <div class="card-title"><span><?= htmlspecialchars($product['title']); ?></span></div>
-                                <div class="card-text time-label"><?= htmlspecialchars($product['description']); ?></div>
-                                <div class="card-text mt-1 mb-0" style="color: #333;">
-                                    ₱<?= htmlspecialchars($product['price']); ?>
+                        <!-- Wrap the entire card in an anchor -->
+                        <a href="productpage.php?id=<?= $product['id']; ?>" class="text-decoration-none text-dark">
+                            <div class="card auction-card h-100">
+                                <img src="<?= htmlspecialchars($product['img']); ?>" class="card-img-top" alt="<?= htmlspecialchars($product['alt']); ?>" />
+                                <div class="card-body text-center">
+                                    <div class="card-title"><span><?= htmlspecialchars($product['title']); ?></span></div>
+                                    <div class="card-text time-label"><?= htmlspecialchars($product['description']); ?></div>
+                                    <div class="card-text mt-1 mb-0" style="color: #333;">
+                                        ₱<?= number_format($product['price'], 2); ?>
+                                    </div>
                                 </div>
-                                <small class="text-danger fw-bold"><?= $product['time'] ?></small>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
+
 
     </div>
 
@@ -436,7 +434,7 @@ if ($result && mysqli_num_rows($result) > 0) {
             mainForm.submit(); // Submit the whole form (includes search & category)
         }
     </script>
-
+    <br>
     <?php include './footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

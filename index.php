@@ -14,6 +14,7 @@
         @import url('../stardom.css');
     </style>
 </head>
+<a href="logout.php" class="text-danger">Log Out</a>
 
 <body>
 

@@ -1,0 +1,108 @@
+/* Import Google Fonts for a similar look:
+ * 'Playfair Display' for titles
+ * 'Poppins' for smaller text
+ */
+
+@import url('./stardom.css');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 20px;
+    display: block;
+    justify-content: center;
+}
+
+.receipt-container {
+    width: 100%;
+    max-width: 600px;
+    /* Max width to mimic a receipt/content area */
+    padding: 40px 0;
+    margin: 0 auto;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+/* Styling for the main titles: 'Items Ordered' and 'Order History' */
+.section-title {
+    font-family: 'Stardom-Regular';
+    font-size: 32px;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Container for a single item (itemName, bid.bidAmount, view more...) */
+.item-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    /* Align the bottom line of the text */
+    padding: 10px 15px;
+    /* Added horizontal padding for the border effect */
+    margin-bottom: 8px;
+    /* Space between entries in Order History */
+    border: 1px solid transparent;
+    /* Initial transparent border */
+    border-radius: 8px;
+    transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    /* Smooth transition for hover */
+}
+
+/* HOVER EFFECT ADDED HERE */
+.item-entry:hover {
+    border-color: #efefef;
+    /* Light grey border on hover */
+    background-color: #efefef;
+    /* Subtle background change on hover */
+    cursor: pointer;
+    /* Indicate it's clickable */
+
+}
+
+
+.item-details {
+    /* Ensures the name and amount stack */
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    padding-bottom: 4px;
+    /* Space between name and amount */
+}
+
+.item-amount {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+    color: #333;
+}
+
+/* Styling for the small 'view more...' text */
+.view-more {
+    font-size: 10px;
+    /* Very small text */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    color: #666;
+    text-decoration: none;
+    /* Remove underline from link */
+    margin-bottom: 2px;
+    /* Slight offset to align with the bottom text */
+}
+
+/* The separating line below 'Items Ordered' */
+.separator {
+    border: 0;
+    height: 1px;
+    background-color: #000;
+    margin-top: 20px;
+    margin-bottom: 0;
+}

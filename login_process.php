@@ -25,13 +25,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // SESSION data
-            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['userID'] = $row['userID'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['isAdmin'] = $row['isAdmin'];
             $_SESSION['firstname'] = $row['firstName'];
             $_SESSION['lastname']  = $row['lastName'];
             if ($row['isAdmin'] == 1) {
-                header("Location: ./header.php");
+                header("Location: ./index.php");
             } else {
                 header("Location: ./homepage.php");
             }

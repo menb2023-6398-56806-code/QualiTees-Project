@@ -64,8 +64,8 @@
             <hr>
             <div class="dropdown-content">
               <a href="#">Profile</a><br>
-              <a href="#">Items Ordered</a><br>
-              <a href="#">Order History</a><br>
+              <a href="./orderedxhistory.php#oOrdered">Items Ordered</a><br>
+              <a href="orderedxhistory.php#oHistory">Order History</a><br>
               <a href="logout.php" class="text-danger">Log Out</a>
             </div>
           </div>
@@ -209,7 +209,7 @@
 
       <!-- Categories -->
       <ul class="navbar-nav d-flex flex-row mb-0">
-        <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
+        <li class="nav-item"><a class="nav-link" href="./homepage.php">HOME</a></li>
         <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=JEWELRY">JEWELRY</a></li>
         <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=FINE+ARTS">FINE ARTS</a></li>
         <li class="nav-item"><a class="nav-link" href="./itemsort.php?search=&sort=chronological&category=CARS">CARS</a></li>

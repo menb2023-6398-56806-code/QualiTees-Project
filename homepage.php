@@ -3,7 +3,7 @@ include_once "conn.php";
 require 'init.php';
 // HERO //
 // ---FETCH HERO DATA (Latest Item) ---
-$heroQuery = "SELECT * FROM items ORDER BY ItemID DESC LIMIT 1";
+$heroQuery = "SELECT * FROM items ORDER BY itemID DESC LIMIT 1";
 $heroResult = mysqli_query($conn, $heroQuery);
 $heroItem = mysqli_fetch_assoc($heroResult);
 
@@ -13,13 +13,13 @@ $heroPrice = "0";
 $heroImg = "./media/temp.png"; // fallback image
 
 if ($heroItem) {
-    $heroName = $heroItem['ItemName'];
+    $heroName = $heroItem['itemName'];
     $heroPrice = $heroItem['price'];
     $heroImg = $heroItem['media'];
 }
 
 // ---(SALE) ---
-$gridQuery = "SELECT * FROM items ORDER BY ItemID DESC LIMIT 8";
+$gridQuery = "SELECT * FROM items ORDER BY itemID DESC LIMIT 8";
 $gridResult = mysqli_query($conn, $gridQuery);
 ?>
 
@@ -142,7 +142,10 @@ $gridResult = mysqli_query($conn, $gridQuery);
             <div class="hero-content">
                 <h1><?php echo htmlspecialchars($heroName); ?></h1>
                 <p>Latest Arrival</p>
-                <button class="hero-btn">BUY NOW - ₱<?php echo number_format($heroPrice, 2); ?></button>
+                <a href="productpage.php?id=<?php echo $heroItem['itemID']; ?>">
+                    <button class="hero-btn">BUY NOW - ₱<?php echo number_format($heroPrice, 2); ?></button>
+                </a>
+
             </div>
         </section>
         <br>
@@ -177,13 +180,13 @@ $gridResult = mysqli_query($conn, $gridQuery);
                         <div class="col-6 col-md-3">
                             <div class="product-card text-center">
                                 <!-- Display Item Image -->
-                                <img src="<?php echo htmlspecialchars($row['media']); ?>" alt="<?php echo htmlspecialchars($row['ItemName']); ?>">
+                                <img src="<?php echo htmlspecialchars($row['media']); ?>" alt="<?php echo htmlspecialchars($row['itemName']); ?>">
 
                                 <!-- Display Item Name -->
-                                <p class="mt-2 fw-semibold"><?php echo htmlspecialchars($row['ItemName']); ?></p>
+                                <p class="mt-2 fw-semibold"><?php echo htmlspecialchars($row['itemName']); ?></p>
 
                                 <!-- Display Item Price -->
-                                <a href="productpage.php?id=<?php echo $row['ItemID']; ?>">
+                                <a href="productpage.php?id=<?php echo $row['itemID']; ?>">
                                     <button class="bid-btn">₱ <?php echo number_format($row['price'], 2); ?></button>
                                 </a>
 
