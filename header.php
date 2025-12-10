@@ -223,7 +223,7 @@
           <input type="text" placeholder="Search...">
           <i class="bi bi-search"></i>
         </div>
-        <i class="bi bi-cart-fill"></i>
+        <a href="./cart.php"><i class="bi bi-cart-fill"></i></a>
         <i class="bi bi-person-circle"></i>
       </div>
 

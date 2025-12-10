@@ -129,7 +129,6 @@ if (!$item) {
 
         <?php
         // ... product query and display logic above ...
-
         if (isset($_POST['add_to_cart'])) {
             if (!isset($_SESSION['userID'])) {
                 echo "<p class='text-center mt-5'>You must be logged in to add items to cart.</p>";
@@ -137,14 +136,21 @@ if (!$item) {
                 $userId = intval($_SESSION['userID']);
                 $itemId = intval($_POST['itemID']);
 
-                $insertQuery = "INSERT INTO cart (userID, itemID) VALUES (?, ?)";
-                $stmt = mysqli_prepare($conn, $insertQuery);
-                mysqli_stmt_bind_param($stmt, "ii", $userId, $itemId);
+                // Check if item already exists in cart
+                $checkQuery = "SELECT cartID FROM cart WHERE userID = $userId AND itemID = $itemId";
+                $checkResult = mysqli_query($conn, $checkQuery);
 
-                if (mysqli_stmt_execute($stmt)) {
-                    echo "<p class='text-success text-center mt-3'>Item added to cart successfully!</p>";
+                if (mysqli_num_rows($checkResult) > 0) {
+                    // Already in cart
+                    echo "<p class='text-warning text-center mt-3'>Item is already in cart.</p>";
                 } else {
-                    echo "<p class='text-danger text-center mt-3'>Failed to add item to cart.</p>";
+                    // Insert new cart row
+                    $insertQuery = "INSERT INTO cart (userID, itemID) VALUES ($userId, $itemId)";
+                    if (mysqli_query($conn, $insertQuery)) {
+                        echo "<p class='text-success text-center mt-3'>Item added to cart successfully!</p>";
+                    } else {
+                        echo "<p class='text-danger text-center mt-3'>Failed to add item to cart.</p>";
+                    }
                 }
             }
         }
