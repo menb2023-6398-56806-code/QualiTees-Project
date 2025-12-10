@@ -29,6 +29,8 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
     echo '<section class="section"><h2 class="section-title">' . $statusLabel . '</h2>';
 
     foreach ($orders as $ref => $group) {
+        echo '<div class="order-group" data-ref="' . htmlspecialchars($ref) . '">';
+
         foreach ($group['items'] as $item) {
             echo '
             <div class="item-entry">
@@ -45,10 +47,11 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
         }
 
         echo '
-        <div class="ref-summary">
-            <p class="text-muted">Reference No: ' . htmlspecialchars($ref) . '</p>
-            <p class="text-muted">Total: ₱' . number_format($group['total'], 2) . '</p>
-        </div>
+            <div class="ref-summary">
+                <p class="text-muted">Reference No: ' . htmlspecialchars($ref) . '</p>
+                <p class="text-muted">Total: ₱' . number_format($group['total'], 2) . '</p>
+            </div>
+        </div> <!-- end order-group -->
         <hr class="separator">';
     }
 
@@ -63,6 +66,7 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QUALITEES | Ordered & History</title>
+    <link rel="icon" href="./media/icon.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
@@ -140,6 +144,18 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
             border-top: 1px solid #dee2e6;
             margin: 1rem 0;
         }
+
+        .order-group {
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            cursor: pointer;
+        }
+
+        .order-group:hover {
+            background-color: #f1f1f1;
+            transform: scale(1.01);
+        }
     </style>
 </head>
 
@@ -157,6 +173,16 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
+<script>
+    $(document).ready(function() {
+        $(".order-group").on("click", function() {
+            let ref = $(this).data("ref");
+            if (ref) {
+                window.location.href = "receiptxsummary.php?ref=" + ref;
+            }
+        });
+    });
+</script>
 <?php include './footer.php'; ?>
 
 </html>
