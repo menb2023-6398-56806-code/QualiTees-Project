@@ -134,8 +134,9 @@ $gridResult = mysqli_query($conn, $gridQuery);
 </head>
 
 <body>
-    <?php include './header.php'; ?>
-
+    <div style="position:sticky; z-index:1000; top: 0;">
+        <?php include './header.php'; ?>
+    </div>
     <div class="container">
         <!-- Hero Banner -->
         <section class="hero d-flex align-items-center" style="background: url('<?php echo $heroImg; ?>') center/cover no-repeat;">

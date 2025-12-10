@@ -75,7 +75,9 @@
 </head>
 
 <body>
-  <?php include './headerLR.php'; ?>
+  <div style="position:sticky; z-index:1000; top: 0; background-color:white">
+    <?php include './headerLR.php'; ?>
+  </div>
 
   <main class="login-form">
     <h2 style="font-family: 'Stardom-Regular'; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">

@@ -102,9 +102,12 @@ $cartItems = mysqli_query($conn, $cartQuery);
         }
     </style>
 </head>
-<?php include './headerC.php'; ?>
+<div style="position:sticky; z-index:1000; top: 0; background-color:white">
+    <?php include './headerC.php'; ?>
+</div>
 
-<body class="bg-light">
+
+<body>
     <div class="container mt-5">
         <h2 class="mb-4"><i class="bi bi-cart"></i> Cart</h2>
 

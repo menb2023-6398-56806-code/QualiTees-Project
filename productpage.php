@@ -101,7 +101,9 @@ if (!$item) {
 </head>
 
 <body>
-    <?php include './header.php'; ?>
+    <div style="position:sticky; z-index:1000; top: 0;">
+        <?php include './header.php'; ?>
+    </div>
 
     <div class="product-wrapper">
         <div class="product-layout">
