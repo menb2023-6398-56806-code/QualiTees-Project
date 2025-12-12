@@ -2,7 +2,6 @@
 include_once "conn.php";   // ensure DB connection
 require './init.php';
 
-
 if (!isset($_GET['id'])) {
     echo "<p class='text-center mt-5'>No product selected.</p>";
     include './footer.php';
@@ -18,6 +17,29 @@ if (!$item) {
     echo "<p class='text-center mt-5'>Product not found.</p>";
     include './footer.php';
     exit;
+}
+
+// Handle toggle product request
+if (isset($_POST['toggle_product']) && isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1) {
+    $itemId = intval($_POST['itemID']);
+    $newStatus = ($item['isOver'] == 0) ? 1 : 0;
+    $updateQuery = "UPDATE items SET isOver = $newStatus WHERE itemID = $itemId";
+
+    if (mysqli_query($conn, $updateQuery)) {
+        // Refresh item data
+        $query = "SELECT * FROM items WHERE itemID = $itemId";
+        $result = mysqli_query($conn, $query);
+        $item = mysqli_fetch_assoc($result);
+
+        // Show only the correct message
+        if ($newStatus == 1) {
+            echo "<p class='text-danger text-center mt-3'>Product Unpublished</p>";
+        } else {
+            echo "<p class='text-success text-center mt-3'>Product Republished</p>";
+        }
+    } else {
+        echo "<p class='text-danger text-center mt-3'>Failed to update product status.</p>";
+    }
 }
 ?>
 
@@ -101,9 +123,13 @@ if (!$item) {
 </head>
 
 <body>
-    <div style="position:sticky; z-index:1000; top: 0;">
-        <?php include './header.php'; ?>
-    </div>
+    <?php
+    if (isset($_SESSION['userID']) && $_SESSION['isAdmin'] == 1) {
+        include './headerA.php';
+    } else {
+        include './header.php';
+    }
+    ?>
 
     <div class="product-wrapper">
         <div class="product-layout">
@@ -119,20 +145,39 @@ if (!$item) {
                 <h2><?php echo htmlspecialchars($item['itemName']); ?></h2>
                 <div class="info">Category: <?php echo htmlspecialchars($item['category']); ?></div>
                 <div class="price">₱ <?php echo number_format($item['price'], 2); ?></div>
-                <div class="info">Inventory: <?php echo $item['inventory']; ?></div>
+                <div class="info">Stock: <?php echo $item['inventory'] - $item['tSold']; ?></div>
                 <div class="info">Sold: <?php echo $item['tSold']; ?></div>
 
-                <form method="post">
+                <!-- Form -->
+                <form method="post" class="d-flex align-items-center gap-2">
                     <input type="hidden" name="itemID" value="<?php echo $item['itemID']; ?>">
+                    <!-- Add to Cart always visible -->
                     <button type="submit" name="add_to_cart" class="add-cart-btn">Add to Cart</button>
+
+                    <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1): ?>
+                        <!-- Admin controls -->
+                        <?php if ($item['isOver'] == 0): ?>
+                            <button type="submit" name="toggle_product"
+                                class="add-cart-btn bg-danger text-white">Disable Product</button>
+                        <?php else: ?>
+                            <button type="submit" name="toggle_product"
+                                class="add-cart-btn bg-success text-white">Enable Product</button>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
 
         <?php
-        // ... product query and display logic above ...
+        // Cart / admin logic
         if (isset($_POST['add_to_cart'])) {
-            if (!isset($_SESSION['userID'])) {
+            if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1) {
+                // Admin clicked Add to Cart → show image instead
+                echo '<div class="text-center mt-4">';
+                echo '<img src="./media/getaloadofthisguy.jpg" width="200" height="200" alt="Get a load of this Guy">';
+                echo '<p class="text-info mt-2">Get a load of this Guy</p>';
+                echo '</div>';
+            } elseif (!isset($_SESSION['userID'])) {
                 echo "<p class='text-center mt-5'>You must be logged in to add items to cart.</p>";
             } else {
                 $userId = intval($_SESSION['userID']);
@@ -143,10 +188,8 @@ if (!$item) {
                 $checkResult = mysqli_query($conn, $checkQuery);
 
                 if (mysqli_num_rows($checkResult) > 0) {
-                    // Already in cart
                     echo "<p class='text-warning text-center mt-3'>Item is already in cart.</p>";
                 } else {
-                    // Insert new cart row
                     $insertQuery = "INSERT INTO cart (userID, itemID) VALUES ($userId, $itemId)";
                     if (mysqli_query($conn, $insertQuery)) {
                         echo "<p class='text-success text-center mt-3'>Item added to cart successfully!</p>";

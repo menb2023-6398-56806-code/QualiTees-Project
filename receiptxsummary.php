@@ -7,30 +7,40 @@ if (!isset($_SESSION['userID'])) {
     exit;
 }
 
-$userID = $_SESSION['userID'];
+$loggedInUserID = $_SESSION['userID'];
+$isAdmin = $_SESSION['isAdmin'] ?? 0; // get admin flag from session
 
-// Get reference number from previous page (GET or POST)
+// Get reference number
 $referenceno = $_GET['ref'] ?? $_POST['ref'] ?? null;
-
 if (!$referenceno) {
     echo "No reference number provided.";
     exit;
 }
 
-// Sanitize input
 $referenceno = mysqli_real_escape_string($conn, $referenceno);
 
-// Get user info
-$userQuery = "SELECT firstName, lastName, email, address FROM users WHERE userID = $userID";
-$userResult = mysqli_query($conn, $userQuery);
-$userRow = mysqli_fetch_assoc($userResult);
+// Get receipt + user info
+$receiptQuery = "
+    SELECT r.userID, r.orderStatus, u.firstName, u.lastName, u.email, u.address
+    FROM receipt r
+    JOIN users u ON r.userID = u.userID
+    WHERE r.referenceno = '$referenceno'
+    LIMIT 1
+";
+$receiptResult = mysqli_query($conn, $receiptQuery);
+$receiptRow = mysqli_fetch_assoc($receiptResult);
 
-// Get receipt items for this reference
+if (!$receiptRow) {
+    echo "Receipt not found.";
+    exit;
+}
+
+// Get items
 $itemsQuery = "
-    SELECT items.itemName, receipt.qty, receipt.tPrice 
-    FROM receipt 
-    JOIN items ON receipt.itemID = items.itemID 
-    WHERE receipt.referenceno = '$referenceno' AND receipt.userID = $userID
+    SELECT i.itemName, r.qty, r.tPrice
+    FROM receipt r
+    JOIN items i ON r.itemID = i.itemID
+    WHERE r.referenceno = '$referenceno'
 ";
 $itemsResult = mysqli_query($conn, $itemsQuery);
 
@@ -39,6 +49,14 @@ $items = [];
 while ($row = mysqli_fetch_assoc($itemsResult)) {
     $items[] = $row;
     $total += $row['tPrice'];
+}
+
+// Handle admin status update
+if ($isAdmin == 1 && isset($_POST['updateStatus'])) {
+    $newStatus = ($_POST['updateStatus'] === 'Delivered') ? 1 : 0;
+    $updateQuery = "UPDATE receipt SET orderStatus = $newStatus WHERE referenceno = '$referenceno'";
+    mysqli_query($conn, $updateQuery);
+    $receiptRow['orderStatus'] = $newStatus; // reflect change immediately
 }
 ?>
 <!DOCTYPE html>
@@ -110,6 +128,29 @@ while ($row = mysqli_fetch_assoc($itemsResult)) {
             color: #666;
             letter-spacing: 1px;
         }
+
+        .admin-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-buttons button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delivered {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .ongoing {
+            background-color: #f39c12;
+            color: white;
+        }
     </style>
 </head>
 <div style="position:sticky; z-index:1000; top: 0; background-color:white">
@@ -130,13 +171,23 @@ while ($row = mysqli_fetch_assoc($itemsResult)) {
         <div class="total">Total: ₱<?= number_format($total, 2) ?></div>
 
         <div class="info">
-            <p>To: <?= htmlspecialchars($userRow['firstName'] . ' ' . $userRow['lastName']) ?></p>
-            <p>Drop: <?= htmlspecialchars($userRow['address']) ?></p>
-            <p>Contact: <?= htmlspecialchars($userRow['email']) ?></p>
+            <p>To: <?= htmlspecialchars($receiptRow['firstName'] . ' ' . $receiptRow['lastName']) ?></p>
+            <p>Drop: <?= htmlspecialchars($receiptRow['address']) ?></p>
+            <p>Contact: <?= htmlspecialchars($receiptRow['email']) ?></p>
             <p>Reference No: <?= htmlspecialchars($referenceno) ?></p>
+            <p>Status: <?= $receiptRow['orderStatus'] == 1 ? "Delivered" : "Ongoing" ?></p>
         </div>
 
-        <div style="text-align:center; margin-top:20px;">THANK YOU</div>
+        <?php if ($isAdmin == 1): ?>
+            <div class="admin-buttons">
+                <form method="post">
+                    <button type="submit" name="updateStatus" value="Delivered" class="delivered">Delivered</button>
+                    <button type="submit" name="updateStatus" value="Ongoing" class="ongoing">Ongoing</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <div class="thank-you">THANK YOU</div>
     </div>
 </body>
 

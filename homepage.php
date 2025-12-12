@@ -3,7 +3,7 @@ include_once "conn.php";
 require 'init.php';
 // HERO //
 // ---FETCH HERO DATA (Latest Item) ---
-$heroQuery = "SELECT * FROM items ORDER BY itemID DESC LIMIT 1";
+$heroQuery = "SELECT * FROM items where isOver = 0 ORDER BY itemID DESC LIMIT 1";
 $heroResult = mysqli_query($conn, $heroQuery);
 $heroItem = mysqli_fetch_assoc($heroResult);
 
@@ -19,7 +19,7 @@ if ($heroItem) {
 }
 
 // ---(SALE) ---
-$gridQuery = "SELECT * FROM items ORDER BY itemID DESC LIMIT 8";
+$gridQuery = "SELECT * FROM items where isOver = 0 ORDER BY itemID DESC LIMIT 8";
 $gridResult = mysqli_query($conn, $gridQuery);
 ?>
 

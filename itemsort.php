@@ -1,5 +1,6 @@
 <?php
 require 'conn.php';
+require 'init.php';
 
 // === Pagination Variables ===
 $limit = 30;
@@ -292,104 +293,107 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 <body>
     <div style="position:sticky; z-index:1000; top: 0; background-color:white">
-        <?php include './header.php'; ?>
+        <?php
+        if (isset($_SESSION['userID']) && $_SESSION['isAdmin'] == 1) {
+            include './headerA.php';
+        } else {
+            include './header.php';
+        }
+        ?>
 
+        <!-- ONE MAIN FORM for Search, Sort, and Filter -->
+        <form method="get" action="" id="searchForm">
 
-        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar my-3">
+                <input type="text" name="search" placeholder="Search items..." value="<?= htmlspecialchars($searchTerm) ?>" />
+                <button type="submit" aria-label="Search" style="background:none; border:none; cursor:pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#aaa" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                </button>
+            </div>
 
-            <!-- ONE MAIN FORM for Search, Sort, and Filter -->
-            <form method="get" action="" id="searchForm">
+            <div class="text-muted ms-1 mb-3 text-center" style="font-size:0.95rem;">
+                <?= $searchTerm === '' ? 'Showing all items' : 'Search result for "' . htmlspecialchars($searchTerm) . '"' ?>
+                <?php if ($category && $category !== 'ALL') echo " in " . htmlspecialchars($category); ?>
+            </div>
 
-                <!-- Search Bar -->
-                <div class="search-bar my-3">
-                    <input type="text" name="search" placeholder="Search items..." value="<?= htmlspecialchars($searchTerm) ?>" />
-                    <button type="submit" aria-label="Search" style="background:none; border:none; cursor:pointer;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#aaa" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            <!-- Filter / Sort Toolbar -->
+            <div class="d-flex align-items-center justify-content-center mb-4 gap-3 flex-wrap">
+
+                <!-- Hidden Sort Input -->
+                <input type="hidden" name="sort" id="sortInput" value="<?= htmlspecialchars($sortMethod) ?>">
+
+                <!-- Custom Sort Dropdown -->
+                <div class="position-relative">
+                    <div id="sortByBtn" class="sortby-dropdown" tabindex="0">
+                        Sort by
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </div>
+                    <div id="sortByMenu" class="sortby-menu" role="menu">
+                        <button type="button" onclick="setSort('chronological')" class="<?= $sortMethod == 'chronological' ? 'active' : '' ?>">Chronological</button>
+                        <button type="button" onclick="setSort('price_low')" class="<?= $sortMethod == 'price_low' ? 'active' : '' ?>">Price low to high</button>
+                        <button type="button" onclick="setSort('price_high')" class="<?= $sortMethod == 'price_high' ? 'active' : '' ?>">Price high to low</button>
+                        <button type="button" onclick="setSort('oldest')" class="<?= $sortMethod == 'oldest' ? 'active' : '' ?>">Oldest</button>
+                    </div>
+                </div>
+
+                <span class="sortbar-divider"></span>
+
+                <!-- Category Radio Buttons -->
+                <div class="d-flex align-items-center gap-4 flex-wrap">
+                    <!-- Note: 'onchange="this.form.submit()"' for immediate filtering when clicked. 
+                            Remove if dont want-->
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="ALL" <?= ($category == '' || $category == 'ALL') ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">ALL</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="JEWELRY" <?= $category == 'JEWELRY' ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">JEWELRY</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="FINE ARTS" <?= $category == 'FINE ARTS' ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">FINE ARTS</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="CARS" <?= $category == 'CARS' ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">CARS</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="WATCHES" <?= $category == 'WATCHES' ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">WATCHES</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <label class="category text-center">
+                        <input type="radio" name="category" value="OTHERS" <?= $category == 'OTHERS' ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <div class="category-label">OTHERS</div>
+                        <div class="category-circle mt-2"></div>
+                    </label>
+
+                    <!-- Filter Submit Button -->
+                    <button type="submit" class="filter-btn ms-3" aria-label="Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#666" viewBox="0 0 16 16">
+                            <path d="M6.5 10V13.5a.5.5 0 0 0 .8.4l2-1.429V10l4.634-5.115A1 1 0 0 0 13.884 3H2.116a1 1 0 0 0-.75 1.885L6.5 10ZM1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5c0 .323-.103.63-.293.879L10.5 10.197V13a2 2 0 0 1-3.2 1.6l-2-1.429A1 1 0 0 1 5 13v-2.803L1.293 4.379A1.5 1.5 0 0 1 1 3.5Z" />
                         </svg>
                     </button>
                 </div>
-
-                <div class="text-muted ms-1 mb-3 text-center" style="font-size:0.95rem;">
-                    <?= $searchTerm === '' ? 'Showing all items' : 'Search result for "' . htmlspecialchars($searchTerm) . '"' ?>
-                    <?php if ($category && $category !== 'ALL') echo " in " . htmlspecialchars($category); ?>
-                </div>
-
-                <!-- Filter / Sort Toolbar -->
-                <div class="d-flex align-items-center justify-content-center mb-4 gap-3 flex-wrap">
-
-                    <!-- Hidden Sort Input -->
-                    <input type="hidden" name="sort" id="sortInput" value="<?= htmlspecialchars($sortMethod) ?>">
-
-                    <!-- Custom Sort Dropdown -->
-                    <div class="position-relative">
-                        <div id="sortByBtn" class="sortby-dropdown" tabindex="0">
-                            Sort by
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-                            </svg>
-                        </div>
-                        <div id="sortByMenu" class="sortby-menu" role="menu">
-                            <button type="button" onclick="setSort('chronological')" class="<?= $sortMethod == 'chronological' ? 'active' : '' ?>">Chronological</button>
-                            <button type="button" onclick="setSort('price_low')" class="<?= $sortMethod == 'price_low' ? 'active' : '' ?>">Price low to high</button>
-                            <button type="button" onclick="setSort('price_high')" class="<?= $sortMethod == 'price_high' ? 'active' : '' ?>">Price high to low</button>
-                            <button type="button" onclick="setSort('oldest')" class="<?= $sortMethod == 'oldest' ? 'active' : '' ?>">Oldest</button>
-                        </div>
-                    </div>
-
-                    <span class="sortbar-divider"></span>
-
-                    <!-- Category Radio Buttons -->
-                    <div class="d-flex align-items-center gap-4 flex-wrap">
-                        <!-- Note: 'onchange="this.form.submit()"' for immediate filtering when clicked. 
-                            Remove if dont want-->
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="ALL" <?= ($category == '' || $category == 'ALL') ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">ALL</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="JEWELRY" <?= $category == 'JEWELRY' ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">JEWELRY</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="FINE ARTS" <?= $category == 'FINE ARTS' ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">FINE ARTS</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="CARS" <?= $category == 'CARS' ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">CARS</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="WATCHES" <?= $category == 'WATCHES' ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">WATCHES</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <label class="category text-center">
-                            <input type="radio" name="category" value="OTHERS" <?= $category == 'OTHERS' ? 'checked' : '' ?> onchange="this.form.submit()">
-                            <div class="category-label">OTHERS</div>
-                            <div class="category-circle mt-2"></div>
-                        </label>
-
-                        <!-- Filter Submit Button -->
-                        <button type="submit" class="filter-btn ms-3" aria-label="Filter">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#666" viewBox="0 0 16 16">
-                                <path d="M6.5 10V13.5a.5.5 0 0 0 .8.4l2-1.429V10l4.634-5.115A1 1 0 0 0 13.884 3H2.116a1 1 0 0 0-.75 1.885L6.5 10ZM1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5c0 .323-.103.63-.293.879L10.5 10.197V13a2 2 0 0 1-3.2 1.6l-2-1.429A1 1 0 0 1 5 13v-2.803L1.293 4.379A1.5 1.5 0 0 1 1 3.5Z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
+    </div>
     </div>
     <div class="container">
         <!-- Cards Grid -->

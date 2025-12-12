@@ -36,8 +36,8 @@ if (isset($_POST['purchase'])) {
             $cartID = intval($cartID);
             $qty = intval($qtys[$cartID]);
 
-            // Get item info
-            $itemQuery = "SELECT items.itemID, items.price 
+            // Get item info including inventory
+            $itemQuery = "SELECT items.itemID, items.itemName, items.price, items.tSold, items.tSales, items.inventory
                           FROM items 
                           INNER JOIN cart ON items.itemID = cart.itemID 
                           WHERE cart.cartID = $cartID";
@@ -48,14 +48,38 @@ if (isset($_POST['purchase'])) {
             $price = floatval($item['price']);
             $totalPrice = $price * $qty;
 
-            // Delete from cart after purchase
-            $deleteQuery = "DELETE FROM cart WHERE cartID = $cartID";
-            mysqli_query($conn, $deleteQuery);
+            // Check inventory constraint
+            $maxAllowed = intval($item['inventory']) - intval($item['tSold']);
+            if ($qty > $maxAllowed) {
+                echo "<script>alert('Order failed: Quantity for {$item['itemName']} exceeds available stock.'); window.location='cart.php';</script>";
+                exit();
+            }
 
             // Insert into receipt with same reference number
             $insertQuery = "INSERT INTO receipt (referenceno, userID, itemID, qty, tPrice, orderStatus) 
                             VALUES ('$ref', $userID, $itemID, $qty, $totalPrice, 0)";
             mysqli_query($conn, $insertQuery);
+
+            // Get the tPrice from receipt (ensures accuracy)
+            $receiptQuery = "SELECT tPrice FROM receipt 
+                             WHERE referenceno = '$ref' AND userID = $userID AND itemID = $itemID 
+                             ORDER BY receiptID DESC LIMIT 1";
+            $receiptResult = mysqli_query($conn, $receiptQuery);
+            $receipt = mysqli_fetch_assoc($receiptResult);
+            $tPriceFromReceipt = floatval($receipt['tPrice']);
+
+            // Update items table using tPrice from receipt
+            $newTSold = intval($item['tSold']) + $qty;
+            $newTSales = floatval($item['tSales']) + $tPriceFromReceipt;
+
+            $updateItemQuery = "UPDATE items 
+                                SET tSold = $newTSold, tSales = $newTSales 
+                                WHERE itemID = $itemID";
+            mysqli_query($conn, $updateItemQuery);
+
+            // Delete from cart after purchase
+            $deleteQuery = "DELETE FROM cart WHERE cartID = $cartID";
+            mysqli_query($conn, $deleteQuery);
         }
 
         echo "<script>alert('Purchase successful! Reference: $ref'); window.location='cart.php';</script>";
@@ -67,7 +91,7 @@ if (isset($_POST['purchase'])) {
 }
 
 // Fetch cart items
-$cartQuery = "SELECT cart.cartID, items.itemID, items.itemName, items.price, items.media 
+$cartQuery = "SELECT cart.cartID, items.itemID, items.itemName, items.price, items.media, items.tSold, items.inventory
               FROM cart 
               INNER JOIN items ON cart.itemID = items.itemID 
               WHERE cart.userID = $userID";
@@ -106,7 +130,6 @@ $cartItems = mysqli_query($conn, $cartQuery);
     <?php include './headerC.php'; ?>
 </div>
 
-
 <body>
     <div class="container mt-5">
         <h2 class="mb-4"><i class="bi bi-cart"></i> Cart</h2>
@@ -137,7 +160,16 @@ $cartItems = mysqli_query($conn, $cartQuery);
                                 <td><img src="<?= htmlspecialchars($row['media']) ?>" alt="item" class="img-thumbnail" style="width:100px;"></td>
                                 <td>₱<?= number_format($row['price'], 2) ?></td>
                                 <td>
-                                    <input type="number" name="qty[<?= $row['cartID'] ?>]" value="1" min="1" class="form-control" style="width:80px;">
+                                    <input type="number"
+                                        name="qty[<?= $row['cartID'] ?>]"
+                                        value="1"
+                                        min="1"
+                                        max="<?= $row['inventory'] - $row['tSold'] ?>"
+                                        class="form-control"
+                                        style="width:80px;">
+                                    <small class="text-muted">
+                                        Max allowed: <?= $row['inventory'] - $row['tSold'] ?>
+                                    </small>
                                 </td>
                                 <td>
                                     <form method="POST" style="display:inline;">
@@ -151,7 +183,9 @@ $cartItems = mysqli_query($conn, $cartQuery);
                         <?php endwhile; ?>
                     </tbody>
                 </table>
-                <button type="submit" name="purchase" class="btn btn-purchase"><i class="bi bi-credit-card"></i> Purchase</button>
+                <button type="submit" name="purchase" class="btn btn-purchase">
+                    <i class="bi bi-credit-card"></i> Purchase
+                </button>
             </form>
         <?php else: ?>
             <div class="alert alert-info">Your cart is empty.</div>
