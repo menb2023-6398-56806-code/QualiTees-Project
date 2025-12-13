@@ -429,7 +429,7 @@ $resultHistoryOrders = $conn->query($sqlHistoryOrders);
           <div>
             <button id="btn-pending" class="all-chip active" type="button">Pending</button>
             <button id="btn-history" class="all-chip" type="button">History</button>
-            <a href="./index.php"><button id="btn-all-orders" class="all-chip" type="button">All</button></a>
+            <a href="./orderedxhistory.php"><button id="btn-all-orders" class="all-chip" type="button">All</button></a>
           </div>
         </div>
         <div class="thin-divider"></div>

@@ -2,63 +2,111 @@
 include 'conn.php';
 include 'init.php';
 
-$userID = $_SESSION['userID'];
-
-function renderOrders($conn, $userID, $statusLabel, $orderStatus)
+/**
+ * Render orders in a 2-column grid, showing 10 initially and expand by 10.
+ * - Admin (isAdmin = 1): shows all users' transactions
+ * - User  (isAdmin = 0): shows only their transactions via $_SESSION['userID']
+ * - Optional search by referenceno via GET ?ref=
+ */
+function renderOrders($conn, $statusLabel, $orderStatus, $searchRef = null)
 {
-    // Get all orders for this user with given status
-    $query = "SELECT referenceno, itemName, qty, tPrice, media
-              FROM receipt
-              JOIN items USING (itemID)
-              WHERE userID = $userID AND orderStatus = $orderStatus
-              ORDER BY referenceno DESC";
+    $isAdmin = isset($_SESSION['isAdmin']) ? (int)$_SESSION['isAdmin'] : 0;
+    $userID  = isset($_SESSION['userID']) ? (int)$_SESSION['userID'] : 0;
+
+    // Build base query
+    $query = "SELECT 
+                r.referenceno,
+                r.qty,
+                r.tPrice,
+                i.itemName,
+                u.firstName, 
+                u.lastName,
+                r.userID
+              FROM receipt r
+              JOIN items i ON r.itemID = i.itemID
+              JOIN users u ON r.userID = u.userID
+              WHERE r.orderStatus = $orderStatus";
+
+    // If not admin, restrict to their own transactions
+    if ($isAdmin === 0 && $userID > 0) {
+        $query .= " AND r.userID = $userID";
+    }
+
+    // If searching by reference number
+    if (!empty($searchRef)) {
+        $searchRefEsc = mysqli_real_escape_string($conn, $searchRef);
+        $query .= " AND r.referenceno = '$searchRefEsc'";
+    }
+
+    $query .= " ORDER BY r.referenceno DESC";
 
     $result = mysqli_query($conn, $query);
 
     // Group by referenceno
     $orders = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $ref = $row['referenceno'];
-        if (!isset($orders[$ref])) {
-            $orders[$ref] = ['items' => [], 'total' => 0];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $ref = $row['referenceno'];
+            if (!isset($orders[$ref])) {
+                $orders[$ref] = [
+                    'items' => [],
+                    'total' => 0,
+                    'user'  => ($row['firstName'] . ' ' . $row['lastName'])
+                ];
+            }
+            $orders[$ref]['items'][] = $row;
+            $orders[$ref]['total'] += (float)$row['tPrice'];
         }
-        $orders[$ref]['items'][] = $row;
-        $orders[$ref]['total'] += $row['tPrice'];
     }
 
-    echo '<section class="section"><h2 class="section-title">' . $statusLabel . '</h2>';
+    // Render section and grid
+    echo '<section class="section" id="section-' . $orderStatus . '">';
+    echo '<h2 class="section-title">' . htmlspecialchars($statusLabel) . '</h2>';
+    echo '<div class="order-grid">';
 
+    $count = 0;
     foreach ($orders as $ref => $group) {
-        echo '<div class="order-group" data-ref="' . htmlspecialchars($ref) . '">';
+        $hiddenClass = ($count >= 10) ? 'hidden' : '';
+        echo '<div class="order-group ' . $hiddenClass . '" data-ref="' . htmlspecialchars($ref) . '">';
+
+        // Customer name once per group
+        echo '<div class="customer-name"><strong>' . htmlspecialchars($group['user']) . '</strong></div>';
 
         foreach ($group['items'] as $item) {
             echo '
             <div class="item-entry">
                 <div class="item-details">
-                    <img src="' . htmlspecialchars($item['media']) . '" alt="item" class="item-img">
                     <div class="item-text">
                         <span class="item-name">' . htmlspecialchars($item['itemName']) . '</span>
                         <span class="item-x"> x </span>
-                        <span class="item-qty">' . $item['qty'] . '</span>
+                        <span class="item-qty">' . htmlspecialchars($item['qty']) . '</span>
                     </div>
-                    <p class="item-amount">₱' . number_format($item['tPrice'], 2) . '</p>
+                    <p class="item-amount">₱' . number_format((float)$item['tPrice'], 2) . '</p>
                 </div>
             </div>';
         }
 
         echo '
-            <div class="ref-summary">
-                <p class="text-muted">Reference No: ' . htmlspecialchars($ref) . '</p>
-                <p class="text-muted">Total: ₱' . number_format($group['total'], 2) . '</p>
-            </div>
-        </div> <!-- end order-group -->
-        <hr class="separator">';
+<div class="ref-summary">
+    <span class="ref-text">Reference No: ' . htmlspecialchars($ref) . '</span><br>
+    <span class="ref-text">Total ₱' . number_format($group['total'], 2) . '</span>
+</div>
+        </div>'; // end order-group
+        $count++;
+    }
+
+    echo '</div>'; // end order-grid
+
+    // Expand icon only if more than 10 groups exist
+    if ($count > 10) {
+        echo '<div class="expand-btn text-center mt-2">
+                <i class="bi bi-chevron-down expand-icon" data-section="' . $orderStatus . '"></i>
+              </div>';
     }
 
     echo '</section>';
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -78,7 +126,7 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
         }
 
         .receipt-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 2rem auto;
             padding: 1rem;
             background: #fff;
@@ -94,21 +142,13 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
         }
 
         .item-entry {
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .item-details {
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-
-        .item-img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            margin-right: 1rem;
-            border-radius: 4px;
         }
 
         .item-text {
@@ -136,53 +176,152 @@ function renderOrders($conn, $userID, $statusLabel, $orderStatus)
 
         .ref-summary {
             text-align: right;
-            margin-top: -0.5rem;
-            margin-bottom: 1rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
-        .separator {
-            border-top: 1px solid #dee2e6;
-            margin: 1rem 0;
+        .ref-text {
+            font-size: 0.85rem;
+            /* smaller text */
+            color: #6c757d;
+            /* Bootstrap grey */
+            display: block;
+            /* stack vertically */
         }
 
         .order-group {
-            padding: 0.5rem;
+            padding: 0.75rem;
             border-radius: 6px;
+            border: 1px solid #ccc;
+            /* grey edge */
             transition: background-color 0.2s ease, transform 0.1s ease;
             cursor: pointer;
+            background-color: #fff;
         }
 
         .order-group:hover {
-            background-color: #f1f1f1;
+            background-color: #f7f7f7;
             transform: scale(1.01);
+        }
+
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .expand-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .expand-icon:hover {
+            color: #0056b3;
+        }
+
+        .top-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-buttons .btn {
+            margin-right: 0.5rem;
+        }
+
+        .search-bar form {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .customer-name {
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 
-<div style="position:sticky; z-index:1000; top: 0; background-color:white">
-    <?php include './headerC.php'; ?>
-</div>
-
 <body>
+    <div style="position:sticky; z-index:1000; top: 0; background-color:white">
+        <?php include './headerA.php'; ?>
+    </div>
+
     <div class="receipt-container">
-        <?php renderOrders($conn, $userID, 'Items Ordered', 0); ?>
-        <?php renderOrders($conn, $userID, 'Order History', 1); ?>
+        <div class="top-controls">
+            <div class="nav-buttons">
+                <button class="btn btn-outline-primary" onclick="showSection(0)">Items Ordered</button>
+                <button class="btn btn-outline-secondary" onclick="showSection(1)">Order History</button>
+            </div>
+
+            <div class="search-bar">
+                <form method="get" action="orderedxhistoryA.php">
+                    <input type="text" name="ref" placeholder="Search Reference No" value="<?php echo isset($_GET['ref']) ? htmlspecialchars($_GET['ref']) : ''; ?>" class="form-control" style="width:300px;">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <?php if (isset($_GET['ref']) && $_GET['ref'] !== ''): ?>
+                        <a href="orderedxhistoryA.php" class="btn btn-secondary">Clear</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+
+        <?php
+        $searchRef = isset($_GET['ref']) ? $_GET['ref'] : null;
+        renderOrders($conn, 'Items Ordered', 0, $searchRef);
+        renderOrders($conn, 'Order History', 1, $searchRef);
+        ?>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
-<script>
-    $(document).ready(function() {
-        $(".order-group").on("click", function() {
-            let ref = $(this).data("ref");
-            if (ref) {
-                window.location.href = "receiptxsummary.php?ref=" + ref;
-            }
+    <script>
+        // Show a specific section (0 = Items Ordered, 1 = Order History)
+        function showSection(status) {
+            document.querySelectorAll(".section").forEach(sec => {
+                sec.style.display = "none";
+            });
+            const target = document.getElementById("section-" + status);
+            if (target) target.style.display = "block";
+        }
+
+        // Default view: show Items Ordered
+        document.addEventListener("DOMContentLoaded", function() {
+            showSection(0);
+
+            // Click to open receipt summary
+            $(document).on("click", ".order-group", function() {
+                let ref = $(this).data("ref");
+                if (ref) {
+                    window.location.href = "receiptxsummary.php?ref=" + ref;
+                }
+            });
+
+            // Expand 10 more per-click per section
+            $(document).on("click", ".expand-icon", function(e) {
+                e.stopPropagation();
+                let sectionStatus = $(this).data("section");
+                let sectionEl = $("#section-" + sectionStatus);
+                let hiddenOrders = sectionEl.find(".order-group.hidden");
+                hiddenOrders.slice(0, 10).removeClass("hidden");
+
+                // Hide icon if nothing left to show
+                if (sectionEl.find(".order-group.hidden").length === 0) {
+                    $(this).closest(".expand-btn").hide();
+                }
+            });
         });
-    });
-</script>
-<?php include './footer.php'; ?>
+    </script>
+
+    <?php include './footer.php'; ?>
+</body>
 
 </html>

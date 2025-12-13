@@ -151,20 +151,34 @@ if (isset($_POST['toggle_product']) && isset($_SESSION['isAdmin']) && $_SESSION[
                 <!-- Form -->
                 <form method="post" class="d-flex align-items-center gap-2">
                     <input type="hidden" name="itemID" value="<?php echo $item['itemID']; ?>">
-                    <!-- Add to Cart always visible -->
-                    <button type="submit" name="add_to_cart" class="add-cart-btn">Add to Cart</button>
+                    <!-- Admin controls -->
+                    <button type="submit" name="add_to_cart" class="add-cart-btn">
+                        Add to Cart
+                    </button>
 
                     <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1): ?>
-                        <!-- Admin controls -->
+
+                        <a href="edit_product.php?itemID=<?php echo $item['itemID']; ?>"
+                            class="add-cart-btn bg-dark text-white text-decoration-none" style="text-align:center">
+                            Edit Product
+                        </a>
+
                         <?php if ($item['isOver'] == 0): ?>
                             <button type="submit" name="toggle_product"
-                                class="add-cart-btn bg-danger text-white">Disable Product</button>
+                                class="add-cart-btn bg-danger text-white">
+                                Disable Product
+                            </button>
                         <?php else: ?>
                             <button type="submit" name="toggle_product"
-                                class="add-cart-btn bg-success text-white">Enable Product</button>
+                                class="add-cart-btn bg-success text-white">
+                                Enable Product
+                            </button>
                         <?php endif; ?>
+
                     <?php endif; ?>
                 </form>
+
+
             </div>
         </div>
 
