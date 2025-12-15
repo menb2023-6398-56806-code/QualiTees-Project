@@ -251,9 +251,17 @@ function renderOrders($conn, $statusLabel, $orderStatus, $searchRef = null)
 </head>
 
 <body>
-    <div style="position:sticky; z-index:1000; top: 0; background-color:white">
-        <?php include './headerA.php'; ?>
-    </div>
+<div style="position:sticky; z-index:1000; top: 0; background-color:white">
+    <?php
+
+    if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1) {
+        include './headerA.php';
+    } else {
+        include './headerC.php';
+    }
+    ?>
+</div>
+
 
     <div class="receipt-container">
         <div class="top-controls">

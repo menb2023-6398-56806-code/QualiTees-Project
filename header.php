@@ -64,8 +64,8 @@
             <hr>
             <div class="dropdown-content">
               <a href="#">Profile</a><br>
-              <a href="./orderedxhistory.php#oOrdered">Items Ordered</a><br>
-              <a href="orderedxhistory.php#oHistory">Order History</a><br>
+              <a href="./orderedxhistory.php">Items Ordered</a><br>
+              <a href="orderedxhistory.php">Order History</a><br>
               <a href="logout.php" class="text-danger">Log Out</a>
             </div>
           </div>
