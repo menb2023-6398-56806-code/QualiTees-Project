@@ -108,7 +108,7 @@
 
 <body>
   <div style="position:sticky; z-index:1000; top: 0; background-color:white">
-    <?php include './headerC.php'; ?>
+    <?php include './headerLR.php'; ?>
   </div>
 
   <main class="register-form">

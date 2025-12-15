@@ -1,17 +1,3 @@
-<?php
-
-// Default link
-$link = "./homepage.php";
-
-// Check if session values exist
-if (isset($_SESSION['isAdmin'])) {
-    if ($_SESSION['isAdmin'] == 1) {
-        $link = "./admin.php";
-    } else {
-        $link = "./orderedxhistory.php";
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -62,11 +48,11 @@ if (isset($_SESSION['isAdmin'])) {
         }
     </style>
 </head>
-
+<!-- <?php echo $link; ?> -->
 <body>
     <header>
         <h1>QUALITEES</h1>
-        <a href="<?php echo $link; ?>" class="close-btn"><i class="bi bi-x-lg"></i></a>
+        <a href="./orderedxhistory.php" class="close-btn"><i class="bi bi-x-lg"></i></a>
     </header>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

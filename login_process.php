@@ -31,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['firstname'] = $row['firstName'];
             $_SESSION['lastname']  = $row['lastName'];
             $_SESSION['address']  = $row['address'];
-            $_SESSION['isAdmin'] = $row['isAdmin'];
             if ($row['isAdmin'] == 1) {
                 header("Location: ./admin.php");
             } else {
