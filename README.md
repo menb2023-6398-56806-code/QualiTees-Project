@@ -9,3 +9,7 @@ Members:
 
 Thank you
 All rights reserved © 2025
+
+
+Moved to another repository for finals
+- https://github.com/JayNavera/final_Qualitees
